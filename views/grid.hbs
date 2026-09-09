@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="phone-shell compact-screen compact-grid-screen">
+    {{> header}}
+
+    <section class="compact-grid-head">
+      <div>
+        <span class="eyebrow">ORGANIC REFERENCE</span>
+        <h1>Карточки соединений</h1>
+        <p>Алканы · алкены · спирты</p>
+      </div>
+      <span class="compact-count">{{foundCount}} / 6</span>
+    </section>
+
+    <form class="compact-filter" action="/compounds/grid" method="GET">
+      <label for="maxMass">Молярная масса ≤</label>
+      <input id="maxMass" name="maxMass" type="number" min="1" step="0.01" placeholder="46.07" value="{{maxMass}}">
+      <button type="submit">Найти</button>
+    </form>
+
+    <section class="compact-card-grid" aria-label="Соединения">
+      {{#each compounds}}
+        <a class="compact-compound-card" href="/compounds/feed/{{this.id}}"
+           data-image-url="{{this.imageUrl}}" data-video-url="{{this.videoUrl}}">
+          <div class="compact-card-media">
+            <img src="{{this.imageUrl}}" alt="{{this.name}}">
+            <span>0{{this.id}}</span>
+          </div>
+          <div class="compact-card-copy">
+            <span class="mono-label">{{this.classLabel}}</span>
+            <h2>{{this.name}}</h2>
+            <p>{{this.formula}} · {{this.molarMass}}</p>
+            <div class="compact-card-foot"><span>CO₂ + H₂O</span><strong>→</strong></div>
+          </div>
+        </a>
+      {{else}}
+        <div class="compact-empty">Нет соединений по фильтру</div>
+      {{/each}}
+    </section>
+
+    {{> bottom-nav}}
+  </main>
+</body>
+</html>

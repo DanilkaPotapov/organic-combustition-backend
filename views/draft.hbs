@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="phone-shell compact-screen compact-draft-screen">
+    {{> header}}
+
+    {{#if draft}}
+      <section class="compact-draft-head" data-image-url="{{draft.imageUrl}}" data-video-url="{{draft.videoUrl}}">
+        <div class="compact-draft-photo">
+          <img src="{{draft.imageUrl}}" alt="{{draft.name}}">
+          <span>DRAFT · 0{{draft.id}}</span>
+        </div>
+        <div class="compact-draft-title">
+          <span class="eyebrow">SAMPLE INTAKE</span>
+          <h1>{{draft.name}}</h1>
+          <p>{{draft.formula}} · {{draft.molarMass}} г/моль</p>
+        </div>
+      </section>
+
+      <section class="compact-fields" aria-label="Поля черновика">
+        <label class="compact-field compact-field--wide"><span>01 · Изображение MinIO</span><input type="text" value="{{draft.imageUrl}}"></label>
+        <label class="compact-field compact-field--wide"><span>02 · Видео MinIO</span><input type="text" value="{{draft.videoUrl}}"></label>
+        <label class="compact-field"><span>03 · Название</span><input type="text" value="{{draft.name}}"></label>
+        <label class="compact-field"><span>04 · Формула</span><input type="text" value="{{draft.formula}}"></label>
+        <label class="compact-field"><span>05 · Молярная масса</span><input type="number" step="0.01" value="{{draft.molarMass}}"></label>
+        <label class="compact-field"><span>06 · Класс</span><input type="text" value="{{draft.classLabel}}"></label>
+      </section>
+
+      <div class="compact-note">В ЛР1 поля редактируются визуально. Сохранения и POST пока нет.</div>
+      <button class="compact-disabled" type="button" disabled>Сохранить — следующая лабораторная</button>
+    {{else}}
+      <section class="empty-state">Черновик отсутствует.</section>
+    {{/if}}
+
+    {{> bottom-nav}}
+  </main>
+</body>
+</html>

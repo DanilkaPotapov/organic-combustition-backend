@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="phone-shell feed-screen">
+    {{> header}}
+
+    {{#if compound}}
+      <section class="feed-media"
+        data-service-id="{{compound.id}}"
+        data-image-url="{{compound.imageUrl}}"
+        data-video-url="{{compound.videoUrl}}">
+
+        <video autoplay muted loop playsinline poster="{{compound.imageUrl}}">
+          <source src="{{compound.videoUrl}}" type="{{compound.videoMime}}">
+        </video>
+        <div class="feed-wash"></div>
+        <div class="feed-grid-lines" aria-hidden="true"></div>
+
+        <div class="feed-kicker">
+          <span class="mono-label">REFERENCE · 0{{compound.id}}</span>
+          <span class="status-dot"></span>
+          <span>{{compound.classLabel}}</span>
+        </div>
+
+        <div class="feed-title">
+          <h1>{{compound.name}}</h1>
+          <p>{{compound.formula}} · {{compound.molarMass}} г/моль</p>
+        </div>
+
+        <aside class="feed-actions" aria-label="Поля и действия">
+          <div class="action-circle action-circle--accent">
+            <strong>{{compound.formula}}</strong>
+            <small>формула</small>
+          </div>
+          <div class="action-circle">
+            <strong>{{compound.molarMass}}</strong>
+            <small>г/моль</small>
+          </div>
+          <div class="action-circle">
+            <strong>♥</strong>
+            <small>{{compound.likeCount}}</small>
+          </div>
+          <a class="action-circle action-circle--next" href="/compounds/feed/{{compound.id}}?next=true" aria-label="Следующее соединение">→</a>
+          <span class="next-label">следующее</span>
+        </aside>
+
+        <section class="feed-caption">
+          <div class="caption-rule"></div>
+          <div class="caption-head">
+            <span class="eyebrow">ANALYTICAL REFERENCE</span>
+            <span class="caption-index">0{{compound.id}} / 06</span>
+          </div>
+          <h2>Полное сгорание.<br><em>Проверяемая формула.</em></h2>
+          <p>{{compound.description}}</p>
+          <div class="caption-tags">
+            <span>{{compound.classLabel}}</span>
+            <span>CO₂</span>
+            <span>H₂O</span>
+          </div>
+          <div class="media-proof">
+            <span>MINIO</span>
+            <code>{{compound.videoUrl}}</code>
+          </div>
+          {{#if compound.imageCredit}}<div class="video-credit">Фото: {{compound.imageCredit}}</div>{{/if}}
+          {{#if compound.videoCredit}}<div class="video-credit">Видео: {{compound.videoCredit}}</div>{{/if}}
+        </section>
+      </section>
+    {{else}}
+      <section class="empty-state feed-empty">Опубликованных соединений нет.</section>
+    {{/if}}
+
+    {{> bottom-nav}}
+  </main>
+</body>
+</html>
