@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/organic_compounds.css">
+</head>
+<body>
+  <main class="organic-phone organic-page organic-add-page">
+    {{> organic-header}}
+
+    {{#if draft}}
+      <section class="organic-add-title">
+        <span>ШАГ 2 · ПУБЛИКАЦИЯ</span>
+        <h1>{{draft.name}}</h1>
+        <p class="organic-step-note">Фото и видео уже сохранены в MinIO. Заполни два предметных поля и описание.</p>
+      </section>
+
+      <section class="organic-draft-media">
+        <div class="organic-draft-media-card">
+          <span>Фото</span>
+          {{#if draft.imageUrl}}
+            <img src="{{draft.imageUrl}}" alt="{{draft.name}}" onerror="this.onerror=null;this.src='/assets/default-organic-compound.svg'">
+          {{else}}
+            <img src="/assets/default-organic-compound.svg" alt="Фото по умолчанию">
+          {{/if}}
+        </div>
+        <div class="organic-draft-media-card">
+          <span>Видео</span>
+          <video controls muted playsinline poster="{{#if draft.imageUrl}}{{draft.imageUrl}}{{else}}/assets/default-organic-compound.svg{{/if}}">
+            {{#if draft.videoUrl}}
+              <source src="{{draft.videoUrl}}">
+            {{/if}}
+            <source src="/assets/default-organic-compound.webm" type="video/webm">
+          </video>
+        </div>
+      </section>
+
+      <form class="organic-add-fields organic-publish-form" action="/organic_compounds/publish" method="POST">
+        <label>
+          <span>Краткое описание</span>
+          <textarea name="shortDescription" rows="3" maxlength="240" required>{{draft.shortDescription}}</textarea>
+        </label>
+        <div class="organic-count-row">
+          <label>
+            <span>Количество атомов C</span>
+            <input name="carbonCount" type="number" min="1" max="30" step="1" value="{{draft.carbonCount}}" placeholder="2" required>
+          </label>
+          <label>
+            <span>Количество атомов H</span>
+            <input name="hydrogenCount" type="number" min="1" max="80" step="1" value="{{draft.hydrogenCount}}" placeholder="6" required>
+          </label>
+        </div>
+        <button class="organic-action" type="submit">Опубликовать</button>
+      </form>
+    {{else}}
+      <section class="organic-add-title">
+        <span>ШАГ 1 · СОЗДАНИЕ</span>
+        <h1>Новое соединение</h1>
+        <p class="organic-step-note">Фото и видео выбираются прямо из Finder/Проводника и загружаются в MinIO.</p>
+      </section>
+
+      <form class="organic-create-form" action="/organic_compounds/create" method="POST" enctype="multipart/form-data">
+        <label class="organic-file-field">
+          <span>Фото соединения</span>
+          <input name="image" type="file" accept="image/*" required>
+          <small>PNG, JPG, GIF или WEBP</small>
+        </label>
+
+        <label class="organic-file-field">
+          <span>Видео соединения</span>
+          <input name="video" type="file" accept="video/*" required>
+          <small>WEBM, MP4 или MOV</small>
+        </label>
+
+        <label class="organic-text-field">
+          <span>Название</span>
+          <input name="name" type="text" maxlength="120" placeholder="Например Этан" required>
+        </label>
+
+        <button class="organic-action" type="submit">Далее</button>
+      </form>
+    {{/if}}
+
+    {{> organic-bottom-nav}}
+  </main>
+</body>
+</html>

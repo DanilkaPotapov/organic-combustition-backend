@@ -2,3 +2,10 @@ node_modules/
 dist/
 .env
 .DS_Store
+media/.download-tmp/
+npm-debug.log*
+node_modules/
+dist/
+.env
+.DS_Store
+*.log

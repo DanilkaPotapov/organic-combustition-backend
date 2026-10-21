@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/organic_compounds.css">
+</head>
+<body>
+  <main class="organic-phone organic-feed-screen">
+    {{#if organicCompound}}
+      <section class="organic-feed-media" data-organic-compound-id="{{organicCompound.id}}">
+        <video autoplay muted loop playsinline poster="{{#if organicCompound.imageUrl}}{{organicCompound.imageUrl}}{{else}}/assets/default-organic-compound.svg{{/if}}">
+          {{#if organicCompound.videoUrl}}
+            <source src="{{organicCompound.videoUrl}}">
+          {{/if}}
+          <source src="/assets/default-organic-compound.webm" type="video/webm">
+        </video>
+        <div class="organic-feed-shade"></div>
+
+        <div class="organic-feed-brand">ORGANIC COMPOUNDS · 0{{organicCompound.id}}</div>
+
+        <aside class="organic-feed-rail" aria-label="Параметры и действия">
+          <div class="organic-rail-param">
+            <strong>{{organicCompound.carbonCount}}</strong>
+            <span>атомов C</span>
+          </div>
+          <div class="organic-rail-param">
+            <strong>{{organicCompound.hydrogenCount}}</strong>
+            <span>атомов H</span>
+          </div>
+          <div class="organic-rail-icon" aria-label="Лайки из БД">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.35-9.4-8.47C.56 9.03 2.2 5 6.1 5c2.18 0 3.5 1.24 4.2 2.3C11 6.24 12.32 5 14.5 5c3.9 0 5.54 4.03 3.5 7.53C15.6 16.65 12 21 12 21z"/></svg>
+            <span>{{organicCompound.likeCount}}</span>
+          </div>
+          <a class="organic-rail-icon organic-rail-next" href="/organic_compounds/feed/{{organicCompound.id}}?next=true" aria-label="Следующее соединение">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4l8 8-8 8 1.8 1.8L19.6 12 9.8 2.2z"/></svg>
+          </a>
+        </aside>
+
+        <section class="organic-feed-copy">
+          <span class="organic-formula">{{organicCompound.displayFormula}}</span>
+          <h1>{{organicCompound.name}}</h1>
+          <div class="organic-feed-description">
+            <p>{{organicCompound.shortDescription}}</p>
+          </div>
+        </section>
+      </section>
+    {{else}}
+      <section class="organic-empty">Опубликованных соединений нет.</section>
+    {{/if}}
+
+    {{> organic-bottom-nav}}
+  </main>
+</body>
+</html>

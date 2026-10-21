@@ -1,0 +1,22 @@
+# Сверка исправленной ЛР2
+
+- [x] PostgreSQL и Adminer в Docker.
+- [x] MinIO в Docker.
+- [x] Таблица услуг называется `organic_compounds`.
+- [x] Связанные таблицы: `organic_compound_users`, `organic_compound_likes`.
+- [x] В пользователе есть `password`.
+- [x] UNIQUE-ограничений нет.
+- [x] Два предметных поля: `carbon_count` и `hydrogen_count`.
+- [x] Оба предметных поля nullable до публикации.
+- [x] Фильтрация выполняется только по `carbon_count`.
+- [x] Есть `draft`, `published`, `deleted`.
+- [x] Правило одного draft проверяется в сервисе.
+- [x] Фото и видео выбираются из Finder/Проводника.
+- [x] Выбранные файлы загружаются в MinIO.
+- [x] В PostgreSQL сохраняются `image_url` и `video_url`.
+- [x] Черновик и опубликованная карточка используют один `image_url`.
+- [x] Default media лежат локально, не в MinIO.
+- [x] Удаление логическое через raw SQL `UPDATE`.
+- [x] Удалённая карточка не отображается.
+- [x] Кнопки выдержаны в cyan `#00B4D8`.
+- [x] ER Draw.io: белый фон, без сетки, A4 landscape, только nullable-поля помечены `NULLABLE`.

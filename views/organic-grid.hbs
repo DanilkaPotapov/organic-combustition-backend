@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/organic_compounds.css">
+</head>
+<body>
+  <main class="organic-phone organic-page">
+    {{> organic-header}}
+
+    <section class="organic-grid-title">
+      <div>
+        <span>ПОИСК В POSTGRESQL</span>
+        <h1>Плитка соединений</h1>
+      </div>
+      <strong>{{foundCount}} / {{totalCount}}</strong>
+    </section>
+
+    <form class="organic-filter" action="/organic_compounds/grid" method="GET">
+      <label>
+        <span>Количество атомов C</span>
+        <input name="carbonCount" type="number" min="1" max="30" step="1" value="{{carbonCount}}" placeholder="Все">
+      </label>
+      <button class="organic-action organic-action--compact" type="submit">Применить</button>
+    </form>
+
+    <section class="organic-card-grid" aria-label="Органические соединения">
+      {{#each organicCompounds}}
+        <article class="organic-card-wrap">
+          <a class="organic-card" href="/organic_compounds/feed/{{this.id}}">
+            <div class="organic-card__media">
+              {{#if this.imageUrl}}
+                <img src="{{this.imageUrl}}" alt="{{this.name}}" onerror="this.onerror=null;this.src='/assets/default-organic-compound.svg'">
+              {{else}}
+                <img src="/assets/default-organic-compound.svg" alt="Фото по умолчанию">
+              {{/if}}
+              <span>0{{this.id}}</span>
+            </div>
+            <div class="organic-card__copy">
+              <h2>{{this.name}}</h2>
+              <p>{{this.displayFormula}}</p>
+              <b>C: {{this.carbonCount}} · H: {{this.hydrogenCount}} · ♥ {{this.likeCount}}</b>
+            </div>
+          </a>
+
+          <form action="/organic_compounds/delete" method="POST" class="organic-delete-form">
+            <input type="hidden" name="organicCompoundId" value="{{this.id}}">
+            <button type="submit" class="organic-delete-btn" aria-label="Логически удалить {{this.name}}">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 21c-1.1 0-2-.9-2-2V7h14v12c0 1.1-.9 2-2 2H7zm10-16H7V3h3.5l1-1h1l1 1H17v2z"/></svg>
+            </button>
+          </form>
+        </article>
+      {{else}}
+        <div class="organic-empty organic-empty--grid">Соединений с таким количеством C нет.</div>
+      {{/each}}
+    </section>
+
+    {{> organic-bottom-nav}}
+  </main>
+</body>
+</html>

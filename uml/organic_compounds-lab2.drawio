@@ -1,0 +1,18 @@
+<mxfile host="app.diagrams.net" modified="2026-10-07T00:00:00.000Z" agent="ChatGPT" version="24.7.17">
+  <diagram id="organic-lab2-er" name="ER ЛР2">
+    <mxGraphModel dx="1169" dy="827" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0" background="#ffffff">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="ER · Organic Compounds · ЛР2" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=28;fontStyle=1;fontColor=#0F1A24;" vertex="1" parent="1"><mxGeometry x="330" y="35" width="510" height="50" as="geometry"/></mxCell>
+        <mxCell id="users" value="&lt;b&gt;organic_compound_users&lt;/b&gt;&lt;br&gt;&lt;br&gt;id SERIAL PK&lt;br&gt;name VARCHAR(120)&lt;br&gt;email VARCHAR(160)&lt;br&gt;password VARCHAR(255)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#00B4D8;strokeWidth=2;fontColor=#0F1A24;align=left;verticalAlign=top;spacing=14;fontSize=15;" vertex="1" parent="1"><mxGeometry x="80" y="185" width="280" height="220" as="geometry"/></mxCell>
+        <mxCell id="compounds" value="&lt;b&gt;organic_compounds&lt;/b&gt;&lt;br&gt;&lt;br&gt;id SERIAL PK&lt;br&gt;name VARCHAR(120)&lt;br&gt;short_description VARCHAR(240) NULLABLE&lt;br&gt;status organic_compound_status&lt;br&gt;image_url VARCHAR(500) NULLABLE&lt;br&gt;video_url VARCHAR(500) NULLABLE&lt;br&gt;carbon_count INTEGER NULLABLE&lt;br&gt;hydrogen_count INTEGER NULLABLE&lt;br&gt;created_at TIMESTAMPTZ&lt;br&gt;creator_id INTEGER FK&lt;br&gt;formed_at TIMESTAMPTZ NULLABLE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#00B4D8;strokeWidth=2;fontColor=#0F1A24;align=left;verticalAlign=top;spacing=14;fontSize=14;" vertex="1" parent="1"><mxGeometry x="430" y="120" width="340" height="390" as="geometry"/></mxCell>
+        <mxCell id="likes" value="&lt;b&gt;organic_compound_likes&lt;/b&gt;&lt;br&gt;&lt;br&gt;id SERIAL PK&lt;br&gt;user_id INTEGER FK&lt;br&gt;organic_compound_id INTEGER FK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#00B4D8;strokeWidth=2;fontColor=#0F1A24;align=left;verticalAlign=top;spacing=14;fontSize=15;" vertex="1" parent="1"><mxGeometry x="840" y="200" width="270" height="185" as="geometry"/></mxCell>
+        <mxCell id="note" value="NULLABLE отмечено только у необязательных полей." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F6FA;strokeColor=#D7E3E9;fontColor=#52677A;align=center;fontSize=14;" vertex="1" parent="1"><mxGeometry x="350" y="610" width="470" height="70" as="geometry"/></mxCell>
+        <mxCell id="e1" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0090AE;strokeWidth=2;fontColor=#0090AE;fontStyle=1;" edge="1" parent="1" source="users" target="compounds"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0090AE;strokeWidth=2;fontColor=#0090AE;fontStyle=1;" edge="1" parent="1" source="users" target="likes"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0090AE;strokeWidth=2;fontColor=#0090AE;fontStyle=1;" edge="1" parent="1" source="compounds" target="likes"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

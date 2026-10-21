@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 1100" role="img" aria-label="Formula Lab default media">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e8f6fa"/>
+      <stop offset="1" stop-color="#f0f4f8"/>
+    </linearGradient>
+  </defs>
+  <rect width="860" height="1100" fill="url(#bg)"/>
+  <circle cx="430" cy="470" r="190" fill="none" stroke="#00b4d8" stroke-width="3" opacity=".32"/>
+  <circle cx="430" cy="470" r="112" fill="#0f1a24"/>
+  <circle cx="260" cy="385" r="62" fill="#00b4d8"/>
+  <circle cx="592" cy="372" r="52" fill="#52677a"/>
+  <circle cx="286" cy="598" r="48" fill="#52677a"/>
+  <circle cx="578" cy="600" r="62" fill="#00b4d8"/>
+  <line x1="325" y1="420" x2="382" y2="450" stroke="#0f1a24" stroke-width="16"/>
+  <line x1="478" y1="444" x2="548" y2="399" stroke="#0f1a24" stroke-width="16"/>
+  <line x1="378" y1="527" x2="320" y2="571" stroke="#0f1a24" stroke-width="16"/>
+  <line x1="483" y1="528" x2="540" y2="568" stroke="#0f1a24" stroke-width="16"/>
+  <text x="430" y="480" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="82" font-weight="700">C</text>
+  <text x="430" y="790" text-anchor="middle" fill="#0f1a24" font-family="Arial, sans-serif" font-size="58" font-weight="700">FORMULA LAB</text>
+  <text x="430" y="850" text-anchor="middle" fill="#52677a" font-family="Arial, sans-serif" font-size="31">default SSR media</text>
+</svg>

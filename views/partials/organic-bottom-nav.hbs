@@ -1,0 +1,14 @@
+<nav class="organic-bottom-nav" aria-label="Навигация">
+  <a class="organic-bottom-nav__item {{#if activeFeed}}is-active{{/if}}" href="/organic_compounds/feed">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+    <span>Лента</span>
+  </a>
+  <a class="organic-bottom-nav__item {{#if activeAdd}}is-active{{/if}}" href="/organic_compounds/add">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v14h-2zM5 11h14v2H5z"/></svg>
+    <span>Добавление</span>
+  </a>
+  <a class="organic-bottom-nav__item {{#if activeGrid}}is-active{{/if}}" href="/organic_compounds/grid">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z"/></svg>
+    <span>Плитка</span>
+  </a>
+</nav>
