@@ -1,124 +1,147 @@
-# ЛР1 — Organic Analytical Lab · Compact V3
+# ЛР3 — Organic Compounds REST API · Потапов Данил ИУ5-54Б
 
-> В этой версии главное изменение — **компактные карточки: 6 карточек плитки полностью помещаются в один портретный экран 430×844 без растягивания**.
+Тема №20: **«Определение формулы органического соединения по продуктам сгорания»**.
 
-# Organic Analytical — ЛР1 РИП, тема №20
+ЛР3 продолжает ЛР2, но интерфейс Handlebars больше не используется: лабораторная показывается только через Postman/Insomnia. Backend — NestJS, PostgreSQL, TypeORM, MinIO.
 
-Учебный backend-проект на NestJS для темы **«Определение формулы органического соединения по продуктам сгорания»**.
+## Исправления после ЛР1/ЛР2
 
-Вариант темы: услуги — формулы простых органических соединений (алканы, алкены, спирты); в дальнейшем заявка должна по массе образца и объемам CO₂/H₂O определять молекулярную формулу неизвестного вещества и молярную массу.
+- предметные поля заменены на `carbon_count` и `hydrogen_count`;
+- фильтр списка работает по `carbonCount`;
+- основной домен, таблица и API называются `organic_compounds`;
+- старые `formula`, `molar_mass`, `/formulas` удалены;
+- убраны UNIQUE-ограничения из схемы;
+- пароль появился в таблице `users` как `password_hash`;
+- новые изображение и видео приходят настоящими файлами `multipart/form-data`;
+- в БД сохраняются имена файлов, бинарные файлы хранятся в MinIO;
+- все ответы с услугой имеют одинаковый набор полей, пустые значения возвращаются как `null`;
+- приложение не формирует собственные поля `statusCode`/`message` в успешных ответах;
+- исходники ЛР3 не содержат комментариев.
 
-## Что реализовано именно в ЛР1
+## Ровно 10 HTTP-методов
 
-- три портретные страницы: **Лента**, **Добавление**, **Плитка**;
-- ровно три GET-обработчика;
-- одна модель-коллекция `ORGANIC_COMPOUNDS`, без БД;
-- статусы `draft`, `published`, `deleted`;
-- одна карточка `draft`, удаленная карточка не показывается;
-- массив `likes` и вычисление `likeCount = likes.length` в контроллере;
-- два поля предметной области: `formula` и `molarMass`;
-- серверный GET-фильтр плитки по `molarMass`, значение фильтра сохраняется;
-- `?next=true` в ленте открывает следующую опубликованную карточку;
-- Handlebars, partials, отдельный CSS, без клиентского JavaScript;
-- PNG/MP4 хранятся в MinIO, `imageUrl` и `videoUrl` — разные поля модели;
-- Docker Compose создает bucket `organic-media` и загружает демонстрационные медиа;
-- Pixso-совместимые SVG-макеты и UML в одном `.drawio` файле.
+| № | Метод | URL | Назначение |
+|---|---|---|---|
+| 1 | GET | `/api/organic_compounds?carbonCount=2` | Список опубликованных услуг с фильтром по количеству C |
+| 2 | GET | `/api/organic_compounds/feed/:id?` | Лента опубликованных услуг; `?next=true` открывает следующую |
+| 3 | GET | `/api/organic_compounds/draft` | Черновик текущего пользователя без ID в URL |
+| 4 | POST | `/api/organic_compounds` | Создание draft с файлами `image` и `video` |
+| 5 | PUT | `/api/organic_compounds/:id/publish` | Публикация собственного draft |
+| 6 | DELETE | `/api/organic_compounds/:id` | Soft delete собственной услуги |
+| 7 | POST | `/api/organic_compounds/:id/like` | `value=1` ставит лайк, `value=0` снимает |
+| 8 | POST | `/api/users/register` | Регистрация пользователя |
+| 9 | POST | `/api/users/auth` | Заглушка аутентификации для ЛР4 |
+| 10 | POST | `/api/users/logout` | Заглушка деавторизации для ЛР4 |
 
-## Прототип дизайна
+`GET /api/organic_compounds/feed` и `GET /api/organic_compounds/feed/2?next=true` — два варианта вызова **одного** HTTP-метода.
 
-Публичный сайт: **Modern Analytical Sciences** — https://modernanalytical.com/
+## Текущий пользователь
 
-Из него адаптированы только общие визуальные приемы: светлая лабораторная подача, крупные многострочные заголовки, строгие разделители, нумерованные карточки, контрастный акцент и свободные отступы. Контент и изображения сайта не копируются. Все использованные приемы перечислены комментарием в начале `public/style.css`.
+В ЛР3 авторизации еще нет. Создатель фиксирован через singleton-функцию:
 
-Три базовых цвета проекта:
+`src/shared/current_user.ts`
 
-- `#E8F6FA` — светлый фон;
-- `#0F1A24` — основной темный текст;
-- `#00B4D8` — акцент.
+Текущий пользователь всегда имеет `id = 1`. Эта функция вызывается в методах домена `organic_compounds`.
 
-## Маршруты
+## Одинаковый JSON услуги
 
-| GET | Назначение |
-|---|---|
-| `/compounds/feed/:id?` | Лента; без ID открывает первую опубликованную карточку |
-| `/compounds/feed/3?next=true` | Тот же обработчик ленты, но с переходом к следующей карточке |
-| `/compounds/draft` | Страница единственного черновика |
-| `/compounds/grid?maxMass=46.07` | Плитка + серверный фильтр по молярной массе |
+Каждый успешный ответ, содержащий услугу, использует один serializer и поля:
 
-Это **три обработчика GET**, а `next` и `maxMass` — query-параметры существующих обработчиков.
+- `id`
+- `name`
+- `shortDescription`
+- `status`
+- `imageUrl`
+- `videoUrl`
+- `carbonCount`
+- `hydrogenCount`
+- `createdAt`
+- `creatorId`
+- `formedAt`
+- `likeCount`
+- `isOwner`
+- `isLiked`
+
+У draft поля, которые еще не заполнены, присутствуют со значением `null`.
+
+## Таблицы
+
+### `users`
+
+| Поле | Тип | NULLABLE |
+|---|---|---|
+| `id` | SERIAL PK | нет |
+| `name` | VARCHAR(120) | нет |
+| `email` | VARCHAR(160) | нет |
+| `password_hash` | VARCHAR(64) | нет |
+
+### `organic_compounds`
+
+| Поле | Тип | NULLABLE |
+|---|---|---|
+| `id` | SERIAL PK | нет |
+| `name` | VARCHAR(120) | нет |
+| `short_description` | VARCHAR(240) | да |
+| `status` | `organic_compound_status` | нет |
+| `image_file_name` | VARCHAR(255) | нет |
+| `video_file_name` | VARCHAR(255) | нет |
+| `carbon_count` | INTEGER | да |
+| `hydrogen_count` | INTEGER | да |
+| `created_at` | TIMESTAMPTZ | нет |
+| `creator_id` | INTEGER FK | нет |
+| `formed_at` | TIMESTAMPTZ | да |
+
+### `organic_compound_likes`
+
+| Поле | Тип | NULLABLE |
+|---|---|---|
+| `id` | SERIAL PK | нет |
+| `user_id` | INTEGER FK | нет |
+| `organic_compound_id` | INTEGER FK | нет |
+
+Каскадного удаления нет. UNIQUE-ограничений нет. Один draft на пользователя обеспечивается бизнес-логикой сервиса.
 
 ## Быстрый запуск
 
 ```bash
 npm install
+npm run media:download
 docker compose up -d
+npm run migration:run
+npm run db:seed
+npm run minio:refresh
 npm run start:dev
 ```
 
-Приложение: http://localhost:3000/compounds/grid
+API: `http://localhost:3000/api`
 
-MinIO Console: http://localhost:9001
+Adminer: `http://localhost:8081`
 
-Логин/пароль MinIO: `minioadmin` / `minioadmin`.
+MinIO Console: `http://localhost:9001`
 
-Остановка:
+MinIO login/password: `minioadmin` / `minioadmin`
 
-```bash
-docker compose down
-```
+PostgreSQL для Adminer:
 
-Полный порядок: `START_HERE.md` и `docs/RUN_GUIDE.md`.
+- System: PostgreSQL
+- Server: `postgres`
+- Username: `organic_compounds_user`
+- Password: `organic_compounds_pass`
+- Database: `organic_compounds_lab3`
 
-## Структура
+## Postman
 
-```text
-src/organic-analysis/
-  organic-compound.model.ts     # модель услуги
-  organic-analysis.data.ts      # единственная коллекция
-  organic-analysis.controller.ts# 3 GET + фильтр + likes.length
-views/
-  feed.hbs
-  draft.hbs
-  grid.hbs
-  partials/
-public/style.css
-design/                         # SVG для Pixso + PNG preview
-media/                          # локальные файлы, которые Docker копирует в MinIO
-uml/lab1-diagrams.drawio        # все UML-диаграммы в одном файле
-docs/                           # защита, ТЗ, вопросы, Git, MinIO, Pixso
-```
+Импортируй:
 
-## Что не реализовано в ЛР1 специально
+`postman/Organic_Compounds_Lab3.postman_collection.json`
 
-Нет сохранения черновика, POST/PUT/DELETE, БД, авторизации и реального расчета заявки по CO₂/H₂O. Эти функции относятся к следующим этапам курса. Страница `Добавление` лишь показывает и позволяет визуально менять поля без отправки данных.
+Для POST создания услуги выбери файлы из:
 
-## Источники требований
+- `postman/files/organic_compound.png`
+- `postman/files/organic_compound.webm`
 
-- Репозиторий курса: https://github.com/iu5git/Web
-- Варианты: https://github.com/iu5git/Web/blob/main/topics.md
-- Методичка дизайна: https://github.com/iu5git/Web/tree/main/tutorials/lab1-design
-- Методичка NestJS: https://github.com/iu5git/Web/tree/main/tutorials/lab1-nest
+После POST коллекция сама записывает `draftId`, после PUT публикации — `compoundId`.
 
+## Важная последовательность показа
 
-## V3 compact
-- 6 published карточек: 2 алкана, 2 алкена, 2 спирта;
-- grid и draft рассчитаны на один экран без скролла;
-- карточки имеют компактную фотографию + короткие данные;
-- реальные тематические видео подключены для метана, этена и этанола, MinIO-видео остаётся fallback;
-- источники и лицензии: `docs/MEDIA_SOURCES.md`.
-
-## V3.3: интернет-медиа вместо сгенерированных файлов
-
-В папке `media/` больше нет старых сгенерированных PNG/MP4. Реальные файлы по конкретным соединениям загружаются одной командой:
-
-```bash
-npm run media:download
-```
-
-После этого пересоздай MinIO:
-
-```bash
-npm run minio:refresh
-```
-
-Полный список источников и лицензий находится в `docs/MEDIA_SOURCES.md`.
+Сначала выполни `npm run db:reset`, затем импортируй Postman collection. После этого выполняй запросы по порядку из `docs/SCREENSHOT_ORDER.md`.

@@ -1,4 +1,13 @@
 node_modules/
 dist/
+.DS_Store
+.env
+media/*.png
+media/*.webm
+media/*.mp4
+!media/README.md
+
+node_modules/
+dist/
 .env
 .DS_Store

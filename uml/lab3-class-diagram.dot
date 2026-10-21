@@ -1,0 +1,30 @@
+digraph Lab3 {
+  graph [rankdir=LR, bgcolor="white", pad="0.2", nodesep="0.35", ranksep="0.6"];
+  node [shape=record, fontname="Arial", fontsize=10];
+  edge [fontname="Arial", fontsize=9];
+  pages [label="{Frontend pages|Feed\lAdd\lGrid\lLogin\l}"];
+  compoundsController [label="{OrganicCompoundsController|GET list(filters)\lGET feed(id?, next?)\lGET draft()\lPOST create(image, video)\lPUT publish(id, dto)\lDELETE remove(id)\lPOST like(id, value)\l}"];
+  usersController [label="{UsersController|POST register\lPOST auth\lPOST logout\l}"];
+  compoundsService [label="{OrganicCompoundsService|list/feed/draft\lcreate/publish/remove/like\lgetCurrentUser()\l}"];
+  minio [label="{MinioService|upload\lpublicUrl\l}"];
+  usersService [label="{UsersService|register\l}"];
+  compoundsRepo [label="{OrganicCompoundsRepository|findPublished\lfindFeed\lfindDraftByCreatorId\lfindById\lsave\lsetLike\llikedIdsByUser\l}"];
+  usersRepo [label="{UsersRepository|findByEmail\lcreate\lsave\l}"];
+  compound [label="{OrganicCompound|carbonCount\lhydrogenCount\lstatus\lcreatorId\l}"];
+  like [label="{OrganicCompoundLike|userId\lorganicCompoundId\l}"];
+  user [label="{User|name\lemail\lpasswordHash\l}"];
+  tables [label="{PostgreSQL|organic_compounds\lorganic_compound_likes\lusers\l}"];
+  pages -> compoundsController;
+  pages -> usersController;
+  compoundsController -> compoundsService;
+  usersController -> usersService;
+  compoundsService -> compoundsRepo;
+  compoundsService -> minio;
+  usersService -> usersRepo;
+  compoundsRepo -> compound;
+  compoundsRepo -> like;
+  usersRepo -> user;
+  compound -> tables;
+  like -> tables;
+  user -> tables;
+}
