@@ -1,3 +1,4 @@
+import { SessionModule } from './shared/session.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,14 +14,15 @@ import { UsersModule } from './users/users.module';
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
         host: config.get<string>('DB_HOST', 'localhost'),
-        port: Number(config.get<string>('DB_PORT', '5433')),
+        port: Number(config.get<string>('DB_PORT', '5434')),
         username: config.get<string>('DB_USERNAME', 'organic_compounds_user'),
         password: config.get<string>('DB_PASSWORD', 'organic_compounds_pass'),
-        database: config.get<string>('DB_DATABASE', 'organic_compounds_lab3'),
+        database: config.get<string>('DB_DATABASE', 'organic_compounds_lab4'),
         autoLoadEntities: true,
         synchronize: false,
       }),
     }),
+    SessionModule,
     OrganicCompoundsModule,
     UsersModule,
   ],

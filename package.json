@@ -1,8 +1,8 @@
 {
-  "name": "potapov-organic-compounds-lab3-rest-api",
-  "version": "3.0.0",
+  "name": "potapov-organic-compounds-lab4",
+  "version": "4.0.0",
   "private": true,
-  "description": "BMSTU IU5-54B, Potapov Danil, Lab 3 — NestJS REST API + PostgreSQL + TypeORM + MinIO",
+  "description": "Потапов Данил ИУ5-54Б — ЛР4 NestJS TypeORM Redis Swagger",
   "scripts": {
     "build": "nest build",
     "start": "nest start",
@@ -12,10 +12,10 @@
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
     "migration:show": "npm run typeorm -- migration:show",
-    "db:seed": "docker exec -i potapov-organic-compounds-postgres psql -U organic_compounds_user -d organic_compounds_lab3 < scripts/seed.sql",
-    "db:reset": "bash scripts/reset-db.sh",
-    "media:download": "bash scripts/download-organic-compounds-media.sh",
-    "minio:refresh": "bash scripts/refresh-organic-compounds-minio.sh"
+    "db:seed": "ts-node scripts/seed.ts",
+    "test:e2e": "ts-node test/e2e.ts",
+    "start:prod": "node dist/main.js",
+    "test:isolated": "node -e \"process.env.TEST_ISOLATED='true';require('ts-node/register');require('./test/e2e')\""
   },
   "dependencies": {
     "@nestjs/common": "10.4.15",
@@ -31,7 +31,11 @@
     "pg": "8.13.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.1",
-    "typeorm": "0.3.20"
+    "typeorm": "0.3.20",
+    "@nestjs/swagger": "7.4.2",
+    "bcryptjs": "2.4.3",
+    "cookie-parser": "1.4.7",
+    "ioredis": "5.4.2"
   },
   "devDependencies": {
     "@nestjs/cli": "10.4.9",
@@ -40,6 +44,16 @@
     "@types/node": "22.10.2",
     "prettier": "3.4.2",
     "ts-node": "10.9.2",
-    "typescript": "5.7.2"
+    "typescript": "5.7.2",
+    "@types/bcryptjs": "2.4.6",
+    "@types/cookie-parser": "1.4.7",
+    "@nestjs/testing": "10.4.15",
+    "supertest": "7.0.0",
+    "@types/supertest": "6.0.2",
+    "pg-mem": "3.0.14",
+    "ioredis-mock": "8.13.1"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

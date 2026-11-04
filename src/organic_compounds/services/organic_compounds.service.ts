@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { extname } from 'path';
-import { getCurrentUser } from '../../shared/current_user';
+import { SessionUser } from '../../shared/access';
 import { CreateOrganicCompoundDto } from '../dto/create_organic_compound.dto';
 import { LikeOrganicCompoundDto } from '../dto/like_organic_compound.dto';
 import { OrganicCompoundFiltersDto } from '../dto/organic_compound_filters.dto';
@@ -30,22 +30,22 @@ export class OrganicCompoundsService {
 
   async list(
     filters: OrganicCompoundFiltersDto,
+    currentUser: SessionUser | null,
   ): Promise<OrganicCompoundResponseDto[]> {
-    const currentUser = getCurrentUser();
     const carbonCount = filters.carbonCount;
     const compounds = await this.repository.findPublished(carbonCount);
     const likedIds = await this.repository.likedIdsByUser(
-      currentUser.id,
+      currentUser?.id ?? 0,
       compounds.map((compound) => compound.id),
     );
 
     return compounds.map((compound) =>
-      this.serialize(compound, currentUser.id, likedIds.has(compound.id)),
+      this.serialize(compound, currentUser?.id ?? 0, likedIds.has(compound.id)),
     );
   }
 
-  async feed(id?: string, next?: string): Promise<OrganicCompoundResponseDto> {
-    const currentUser = getCurrentUser();
+  async feed(currentUser: SessionUser | null, id?: string, next?: string): Promise<OrganicCompoundResponseDto> {
+    if (next !== undefined && next !== 'true' && next !== 'false') throw new BadRequestException();
     const numericId = id === undefined ? undefined : Number(id);
 
     if (id !== undefined && (!Number.isInteger(numericId) || numericId < 1)) {
@@ -61,34 +61,33 @@ export class OrganicCompoundsService {
       throw new NotFoundException();
     }
 
-    const likedIds = await this.repository.likedIdsByUser(currentUser.id, [
+    const likedIds = await this.repository.likedIdsByUser(currentUser?.id ?? 0, [
       compound.id,
     ]);
 
-    return this.serialize(compound, currentUser.id, likedIds.has(compound.id));
+    return this.serialize(compound, currentUser?.id ?? 0, likedIds.has(compound.id));
   }
 
-  async draft(): Promise<OrganicCompoundResponseDto> {
-    const currentUser = getCurrentUser();
-    const compound = await this.repository.findDraftByCreatorId(currentUser.id);
+  async draft(currentUser: SessionUser): Promise<OrganicCompoundResponseDto> {
+    const compound = await this.repository.findDraftByCreatorId(currentUser?.id ?? 0);
 
     if (!compound) {
       throw new NotFoundException();
     }
 
-    const likedIds = await this.repository.likedIdsByUser(currentUser.id, [
+    const likedIds = await this.repository.likedIdsByUser(currentUser?.id ?? 0, [
       compound.id,
     ]);
 
-    return this.serialize(compound, currentUser.id, likedIds.has(compound.id));
+    return this.serialize(compound, currentUser?.id ?? 0, likedIds.has(compound.id));
   }
 
   async create(
+    currentUser: SessionUser,
     dto: CreateOrganicCompoundDto,
     image: UploadedMediaFile | undefined,
     video: UploadedMediaFile | undefined,
-  ): Promise<OrganicCompoundResponseDto> {
-    const currentUser = getCurrentUser();
+  ): Promise<{ id: number }> {
     const name = dto.name?.trim();
 
     if (!name || !image || !video) {
@@ -96,7 +95,7 @@ export class OrganicCompoundsService {
     }
 
     const existingDraft = await this.repository.findDraftByCreatorId(
-      currentUser.id,
+      currentUser?.id ?? 0,
     );
 
     if (existingDraft) {
@@ -122,14 +121,14 @@ export class OrganicCompoundsService {
     });
 
     const saved = await this.repository.save(compound);
-    return this.serialize(saved, currentUser.id, false);
+    return { id: saved.id };
   }
 
   async publish(
+    currentUser: SessionUser,
     id: number,
     dto: PublishOrganicCompoundDto,
   ): Promise<OrganicCompoundResponseDto> {
-    const currentUser = getCurrentUser();
     const compound = await this.repository.findById(id);
 
     if (!compound || compound.status === OrganicCompoundStatus.DELETED) {
@@ -159,11 +158,10 @@ export class OrganicCompoundsService {
     compound.formedAt = new Date();
 
     const saved = await this.repository.save(compound);
-    return this.serialize(saved, currentUser.id, false);
+    return this.serialize(saved, currentUser?.id ?? 0, false);
   }
 
-  async remove(id: number): Promise<void> {
-    const currentUser = getCurrentUser();
+  async remove(currentUser: SessionUser, id: number): Promise<void> {
     const compound = await this.repository.findById(id);
 
     if (!compound || compound.status === OrganicCompoundStatus.DELETED) {
@@ -179,10 +177,10 @@ export class OrganicCompoundsService {
   }
 
   async like(
+    currentUser: SessionUser,
     id: number,
     dto: LikeOrganicCompoundDto,
   ): Promise<OrganicCompoundResponseDto> {
-    const currentUser = getCurrentUser();
     const compound = await this.repository.findById(id);
 
     if (!compound || compound.status !== OrganicCompoundStatus.PUBLISHED) {
@@ -190,14 +188,14 @@ export class OrganicCompoundsService {
     }
 
     const value = dto.value;
-    await this.repository.setLike(currentUser.id, id, value);
+    await this.repository.setLike(currentUser?.id ?? 0, id, value);
     const updated = await this.repository.findById(id);
 
     if (!updated) {
       throw new NotFoundException();
     }
 
-    return this.serialize(updated, currentUser.id, value === 1);
+    return this.serialize(updated, currentUser?.id ?? 0, value === 1);
   }
 
   private serialize(

@@ -14,6 +14,15 @@ export class UsersRepository {
     return this.users.findOne({ where: { email } });
   }
 
+  async register(data: Partial<User>) {
+    return this.users.manager.transaction(async (manager) => {
+      await manager.query('SELECT pg_advisory_xact_lock(hashtext($1))', [data.email]);
+      const users = manager.getRepository(User);
+      if (await users.findOne({ where: { email: data.email } })) return null;
+      return users.save(users.create(data));
+    });
+  }
+
   create(data: Partial<User>) {
     return this.users.create(data);
   }

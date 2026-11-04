@@ -1,13 +1,11 @@
 node_modules/
 dist/
-.DS_Store
 .env
-media/*.png
-media/*.webm
-media/*.mp4
-!media/README.md
+*.log
+.DS_Store
 
 node_modules/
 dist/
-.env
+.env*
+!.env.example
 .DS_Store

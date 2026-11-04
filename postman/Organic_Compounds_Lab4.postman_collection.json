@@ -1,0 +1,277 @@
+{
+  "info": {
+    "name": "Потапов Данил ИУ5-54Б — ЛР4 (10 методов)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Порядок защиты — docs/Порядок_защиты.md. Для гостя отключите Cookie и очистите Cookies. Для next измените запрос 06 на /organic_compounds/feed/{{feedId}}?next=true."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3004/api"
+    },
+    {
+      "key": "sessionId",
+      "value": ""
+    },
+    {
+      "key": "compoundId",
+      "value": ""
+    },
+    {
+      "key": "feedId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 POST auth — вход",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/users/auth",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"potapov@example.local\",\n  \"password\": \"Potapov123!\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code===200){const c=pm.response.headers.get('Set-Cookie');const m=c&&c.match(/sessionId=([^;]+)/);if(m)pm.collectionVariables.set('sessionId',m[1]);}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 GET list — carbonCount=2",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "sessionId={{sessionId}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/organic_compounds?carbonCount=2"
+      }
+    },
+    {
+      "name": "03 POST create — Далее, только 3 поля",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "sessionId={{sessionId}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/organic_compounds",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "name",
+              "value": "Бутан",
+              "type": "text"
+            },
+            {
+              "key": "image",
+              "type": "file",
+              "src": "organic_compound.png"
+            },
+            {
+              "key": "video",
+              "type": "file",
+              "src": "organic_compound.webm"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code===201)pm.collectionVariables.set('compoundId',pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 GET draft — свой черновик",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "sessionId={{sessionId}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/organic_compounds/draft"
+      }
+    },
+    {
+      "name": "05 PUT publish — публикация",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "sessionId={{sessionId}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/organic_compounds/{{compoundId}}/publish",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"shortDescription\": \"Алкан с четырьмя атомами углерода\",\n  \"carbonCount\": 4,\n  \"hydrogenCount\": 10\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "06 GET feed — первая карточка",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "sessionId={{sessionId}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/organic_compounds/feed"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code===200)pm.collectionVariables.set('feedId',pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 POST like — value 0 или 1",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "sessionId={{sessionId}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/organic_compounds/{{feedId}}/like",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"value\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "08 DELETE — своя карточка",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "sessionId={{sessionId}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/organic_compounds/{{compoundId}}"
+      }
+    },
+    {
+      "name": "09 POST register — новый пользователь",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/users/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Новый автор\",\n  \"email\": \"new-{{$timestamp}}@example.local\",\n  \"password\": \"Potapov123!\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "10 POST logout — выход",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "sessionId={{sessionId}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/users/logout"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code===200)pm.collectionVariables.set('sessionId','');"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
