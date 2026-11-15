@@ -15,7 +15,8 @@
     "db:seed": "ts-node scripts/seed.ts",
     "test:e2e": "ts-node test/e2e.ts",
     "start:prod": "node dist/main.js",
-    "test:isolated": "node -e \"process.env.TEST_ISOLATED='true';require('ts-node/register');require('./test/e2e')\""
+    "test:isolated": "node -e \"process.env.TEST_ISOLATED='true';require('ts-node/register');require('./test/e2e')\"",
+    "redis:users": "bash scripts/redis-users.sh"
   },
   "dependencies": {
     "@nestjs/common": "10.4.15",

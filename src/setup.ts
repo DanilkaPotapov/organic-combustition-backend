@@ -14,6 +14,6 @@ export function setup(app: INestApplication) {
   const document = SwaggerModule.createDocument(app, config);
   const feedById = document.paths['/api/organic_compounds/feed/{id}']?.get;
   if (feedById) feedById.operationId = 'OrganicCompoundsController_feedById';
-  SwaggerModule.setup('api', app, document, { swaggerOptions: { withCredentials: true } });
+  SwaggerModule.setup('api', app, document, { swaggerOptions: { withCredentials: true }, customCss: '.swagger-ui .opblock .opblock-summary { background: #0F1A24; } .swagger-ui .opblock .opblock-summary .opblock-summary-description, .swagger-ui .opblock .opblock-summary .opblock-summary-path { color: #fff; }' });
   return document;
 }
